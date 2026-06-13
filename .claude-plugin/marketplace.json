@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "plugins": [
+    {
+      "name": "task-dashboard",
+      "description": "Six Claude Code skills for capturing, updating, listing, and closing personal tasks stored as markdown files in a task-data repository. Works on macOS and Windows 11.",
+      "author": {
+        "name": "Richard Cowin"
+      },
+      "source": {
+        "type": "git",
+        "url": "."
+      },
+      "category": "productivity"
+    }
+  ]
+}
