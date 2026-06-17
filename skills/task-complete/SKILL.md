@@ -56,16 +56,16 @@ Set `state: <done|dropped>` and update `last-updated` to today's date in YYYY-MM
 
 Before flipping the state, write a note that captures **what was actually done, or what changed** — not a bare "Done in session." The archived task is the only durable record of the work; the note must let a future reader understand the outcome without reconstructing the session.
 
-Lead with today's date in long British format, then a factual summary. Keep it tight — one line when the work genuinely was trivial, two or three short lines (or a brief `- ` list) when there's substance worth recording. Name the concrete artefacts: files or modules touched, the PR or commit, the decision taken, who confirmed it.
+Use the canonical note format: `claude YYYY-MM-DD HH:mm — text`, where `YYYY-MM-DD` is today's date and `HH:mm` is the current 24-hour wall-clock time at the moment of writing. Keep it tight — one line when the work genuinely was trivial, two or three short lines (or a brief `- ` list) when there's substance worth recording. Name the concrete artefacts: files or modules touched, the PR or commit, the decision taken, who confirmed it.
 
 - For `done`: describe the outcome and the change. Examples:
-  - `11 May 2026 — Done; added retry/backoff to the sync client (src/sync/client.ts), PR #142 merged.`
-  - `11 May 2026 — Done; Helen confirmed the Q2 numbers by email, figures filed in the model.`
-  - `11 May 2026 — Done; root cause was a stale cache key — fixed in cacheKey() and covered by a regression test.`
+  - `claude 2026-05-11 14:32 — Done; added retry/backoff to the sync client (src/sync/client.ts), PR #142 merged.`
+  - `claude 2026-05-11 14:32 — Done; Helen confirmed the Q2 numbers by email, figures filed in the model.`
+  - `claude 2026-05-11 14:32 — Done; root cause was a stale cache key — fixed in cacheKey() and covered by a regression test.`
 - For `dropped`: describe why it's being abandoned and any consequence. Examples:
-  - `11 May 2026 — Dropped; superseded by T57, which takes the schema-first approach instead.`
-  - `11 May 2026 — Dropped; problem went away after the Node 25 upgrade, no code change needed.`
-  - `11 May 2026 — Dropped; no longer relevant after the team reprioritised.`
+  - `claude 2026-05-11 14:32 — Dropped; superseded by T57, which takes the schema-first approach instead.`
+  - `claude 2026-05-11 14:32 — Dropped; problem went away after the Node 25 upgrade, no code change needed.`
+  - `claude 2026-05-11 14:32 — Dropped; no longer relevant after the team reprioritised.`
 
 Source the detail in this order: the user's own wording if they gave any; otherwise the work done in this session (changed files, commands run, decisions made); otherwise the task body and recent context. If genuinely nothing is known beyond "it's done", say so explicitly (`Done; no detail captured.`) rather than inventing specifics — but treat that as the rare exception, not the default.
 
@@ -95,7 +95,7 @@ This moves any task whose state is `done` or `dropped` into `<task-data>/tasks/a
 
 ```
 ✅ T12 → done                         archived
-     + "11 May 2026 — Resolved; PR #142 merged."
+     + "claude 2026-05-11 14:32 — Resolved; PR #142 merged."
      archive: <task-data>/tasks/archive/t12-foo.md
 ```
 
@@ -103,7 +103,7 @@ For dropped:
 
 ```
 🗑  T22 → dropped                     archived
-     + "11 May 2026 — Dropped; superseded by T57."
+     + "claude 2026-05-11 14:32 — Dropped; superseded by T57."
      archive: <task-data>/tasks/archive/t22-bar.md
 ```
 
@@ -115,19 +115,19 @@ If the archive sweep didn't actually move the file (e.g. the script errored, or 
 
 User: *"T12 is done — Helen replied with the Q2 numbers this morning"*
 
-- Set `state: done`, append `11 May 2026 — Done; Helen replied with Q2 numbers.`, run archive sweep.
+- Set `state: done`, append `claude 2026-05-11 09:15 — Done; Helen replied with Q2 numbers.`, run archive sweep.
 
 **Example 2 — done, detail reconstructed from the session**
 
 User: *"finished T19"*
 
-- The user gave no wording, so summarise the work done this session. If T19 was "add alphabetical ordering to the filter dropdowns", append `11 May 2026 — Done; sorted the project/person filter dropdowns alphabetically and fixed the cold-load select sync (src/public/js/panels/tasks.js).` Only fall back to `Done; no detail captured.` if the session genuinely reveals nothing.
+- The user gave no wording, so summarise the work done this session. If T19 was "add alphabetical ordering to the filter dropdowns", append `claude 2026-05-11 14:30 — Done; sorted the project/person filter dropdowns alphabetically and fixed the cold-load select sync (src/public/js/panels/tasks.js).` Only fall back to `Done; no detail captured.` if the session genuinely reveals nothing.
 
 **Example 3 — dropped**
 
 User: *"drop T22 — Ben changed his mind and we're keeping the old schema"*
 
-- Set `state: dropped`, append `11 May 2026 — Dropped; Ben opted to keep the old schema.`, run archive sweep.
+- Set `state: dropped`, append `claude 2026-05-11 14:32 — Dropped; Ben opted to keep the old schema.`, run archive sweep.
 
 ## Boundaries
 

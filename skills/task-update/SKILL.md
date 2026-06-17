@@ -64,15 +64,17 @@ Always update `last-updated` to today's date in YYYY-MM-DD format. If `last-upda
 
 ### 4. Append context line (if there's new info)
 
-One line, plain prose, ≤ 140 chars. Lead with today's date in long British format, e.g.:
+One line, plain prose, ≤ 140 chars. Use the canonical note format, leading with `claude`, today's date in `YYYY-MM-DD`, and the current time in `HH:mm` (24-hour), e.g.:
 
 ```
-11 May 2026 — Helen confirmed she'll come back by Friday on the Q2 numbers.
+claude 2026-05-11 14:32 — Helen confirmed she'll come back by Friday on the Q2 numbers.
 ```
+
+The dashboard renders `claude YYYY-MM-DD HH:mm — text` with an attributed sparkles glyph and a formatted date. Use the real wall-clock time at the moment of writing; do not guess or round.
 
 Append it to the end of the body, after a single blank line if the body doesn't already end in one. Don't add a heading like `## Updates`. Don't reformat existing content. The dashboard renders the body as-is; tiny appended lines build up naturally over time.
 
-For a genuine blocker or warning that deserves visual emphasis, the one fact may instead be appended as a `> [!warning]` callout (two physical lines: `> [!warning]` then `> <date> — <text>`), which the dashboard renders as a tinted block. Use sparingly — one callout per genuinely important inflection, never for routine notes.
+For a genuine blocker or warning that deserves visual emphasis, the one fact may instead be appended as a `> [!warning]` callout (two physical lines: `> [!warning]` then `> <text>`), which the dashboard renders as a tinted block. Use sparingly — one callout per genuinely important inflection, never for routine notes.
 
 Whether or not a context line is appended, always update `last-updated` in the frontmatter to today's date.
 
@@ -80,7 +82,7 @@ Whether or not a context line is appended, always update `last-updated` in the f
 
 ```
 ✏️  T12 → type: action · state: in-progress     <task-data>/tasks/t12-foo.md
-     + "11 May 2026 — Helen confirmed she'll come back by Friday."
+     + "claude 2026-05-11 14:32 — Helen confirmed she'll come back by Friday."
 ```
 
 Include only the parts that changed on the `→` line: `type:` and/or `state:`, joined by ` · ` when both changed.
@@ -99,19 +101,19 @@ User: *"T19 — starting on it now"*
 
 User: *"T22 — Ben pushed back on the schema; want to keep the date string instead of converting to ISO"*
 
-- Find T22, no state change. Append a body line summarising the push-back: "11 May 2026 — Ben prefers keeping the date string; doesn't want ISO conversion."
+- Find T22, no state change. Append a body line summarising the push-back: "claude 2026-05-11 14:30 — Ben prefers keeping the date string; doesn't want ISO conversion."
 
 **Example 3 — both**
 
 User: *"T7 in flight — got Charlotte's sign-off, just need to write the diff"*
 
-- Find T7, set `state: in-progress`. Append: "11 May 2026 — Charlotte signed off; remaining work is the diff."
+- Find T7, set `state: in-progress`. Append: "claude 2026-05-11 14:30 — Charlotte signed off; remaining work is the diff."
 
 **Example 4 — type promotion (idea → action), with state**
 
 User: *"right, let's actually do T9 — it's an action now, starting it"*
 
-- Find T9, set `type: action` and `state: in-progress`. Append: "11 May 2026 — Promoted from idea to action; starting implementation." Report line: `T9 → type: action · state: in-progress`.
+- Find T9, set `type: action` and `state: in-progress`. Append: "claude 2026-05-11 14:30 — Promoted from idea to action; starting implementation." Report line: `T9 → type: action · state: in-progress`.
 
 **Example 5 — type only**
 
@@ -123,7 +125,7 @@ User: *"T15 isn't an idea, it's a bug"*
 
 User: *"park T12 for now — waiting on the vendor to confirm the format"*
 
-- Find T12, set `state: on-hold` (parking language targets on-hold, never `open`). Append: "9 June 2026 — Parked pending vendor confirmation of the format." Report line: `T12 → state: on-hold`.
+- Find T12, set `state: on-hold` (parking language targets on-hold, never `open`). Append: "claude 2026-06-09 10:15 — Parked pending vendor confirmation of the format." Report line: `T12 → state: on-hold`.
 
 **Example 7 — branch set**
 
@@ -135,7 +137,7 @@ User: *"T19 — branch is t19-auth-refactor"*
 
 User: *"T7 — moving to Karl, he's picking this up now"*
 
-- Find T7, set `person: Karl`. Append: "11 June 2026 — Karl taking this over." Report line: `T7 → person: Karl`.
+- Find T7, set `person: Karl`. Append: "claude 2026-06-11 14:30 — Karl taking this over." Report line: `T7 → person: Karl`.
 
 ## Boundaries
 
