@@ -113,7 +113,7 @@ When the user makes a clear decision to proceed with implementation of an idea:
 When a genuine blocker surfaces, or a decision is made that changes the task's trajectory:
 
 - **Delegate to `task-dashboard:task-update`: append one disciplined line.**
-- Format: long British date, plain prose, ≤ 140 chars. Example: `19 May 2026 — Blocked on Ben's sign-off before the schema can be finalised.`
+- Format: canonical note format, plain prose, ≤ 140 chars. Lead with `claude`, today's date in `YYYY-MM-DD`, and the current wall-clock time in `HH:mm` (24-hour). Example: `claude 2026-05-19 14:32 — Blocked on Ben's sign-off before the schema can be finalised.`
 - No `## Updates` heading. No more than one line per turn.
 - Only fires when something genuinely changes the task's direction or blocks progress. Meeting notes, side discussion, and chatter do not qualify.
 
