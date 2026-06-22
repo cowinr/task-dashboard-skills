@@ -69,7 +69,7 @@ Use the canonical note format: `claude YYYY-MM-DD HH:mm — text`, where `YYYY-M
 
 Source the detail in this order: the user's own wording if they gave any; otherwise the work done in this session (changed files, commands run, decisions made); otherwise the task body and recent context. If genuinely nothing is known beyond "it's done", say so explicitly (`Done; no detail captured.`) rather than inventing specifics — but treat that as the rare exception, not the default.
 
-Append after a single blank line if the body doesn't already end in one. Don't add a heading.
+Append the note always preceded by exactly one blank line, so it never sits directly under the previous line (body prose or an earlier `claude …` note). If the body already ends in a blank line, append the note; if it ends in a non-blank line, insert a blank line first, then the note. Don't add a heading.
 
 ### 5. Run the archive sweep
 

@@ -72,7 +72,7 @@ claude 2026-05-11 14:32 — Helen confirmed she'll come back by Friday on the Q2
 
 The dashboard renders `claude YYYY-MM-DD HH:mm — text` with an attributed sparkles glyph and a formatted date. Use the real wall-clock time at the moment of writing; do not guess or round.
 
-Append it to the end of the body, after a single blank line if the body doesn't already end in one. Don't add a heading like `## Updates`. Don't reformat existing content. The dashboard renders the body as-is; tiny appended lines build up naturally over time.
+Append it to the end of the body, always preceded by exactly one blank line. The appended note line must never sit directly under the previous line (whether that line is body prose or an earlier `claude …` note) — there is always a blank line between them. Concretely: if the body already ends in a blank line, append the note; if it ends in a non-blank line, insert a blank line first, then the note. Notes therefore stack as blank-line-separated paragraphs, never as a tight block. Don't add a heading like `## Updates`. Don't reformat existing content. The dashboard renders the body as-is; tiny appended lines build up naturally over time.
 
 For a genuine blocker or warning that deserves visual emphasis, the one fact may instead be appended as a `> [!warning]` callout (two physical lines: `> [!warning]` then `> <text>`), which the dashboard renders as a tinted block. Use sparingly — one callout per genuinely important inflection, never for routine notes.
 
