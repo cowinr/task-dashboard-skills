@@ -53,6 +53,14 @@ Read the full file — frontmatter and body. Extract:
 
 If `related`, `branch`, `pr`, or `jira` are absent from the frontmatter, they are simply absent — do not scan the body as a substitute for these structured fields. A body scan for incidental `T\d+` mentions may be offered as a clearly-secondary "also seen in body" supplement only if it adds something the frontmatter did not already provide, and must be labelled as such.
 
+After reading, open the file in the editor so it is on screen as the bind lands:
+
+```bash
+code -r <task-data>/tasks/<the-task-file>.md 2>/dev/null || true
+```
+
+Use `-r` (reuse window) so a rebind does not spawn a fresh window each time. This is a read-only side effect and does not violate the read-only-at-bind-time rule — the loader still never writes to the task file. If the `code` CLI is not on PATH the command fails silently and the bind proceeds unaffected; never block or warn on it.
+
 ### 3. Emit the compact bind block
 
 ```
