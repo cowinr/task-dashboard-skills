@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Personal task-management skills for the task dashboard.",
-    "version": "1.0.1"
+    "version": "1.0.2"
   },
   "plugins": [
     {
       "name": "task-dashboard",
       "source": ".",
       "description": "Six Claude Code skills for capturing, updating, listing, and closing personal tasks stored as markdown files in a task-data repository. Works on macOS and Windows 11.",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": {
         "name": "Richard Cowin"
       }
