@@ -34,7 +34,7 @@ created: YYYY-MM-DD                   # required; today's date
 last-updated: YYYY-MM-DD              # required; same as created at creation time
 project: <encoded id or null>         # optional; absolute path of cwd, / → - (POSIX) or \ → - (Windows)
 person: <name>                        # optional; only when there's a named human counterparty
-tags: [tag1, tag2]                    # optional; omit if nothing meaningful
+tags: [tag1, tag2]                    # optional; ONLY names from tags-master-list.json (see step 5); omit if none fit
 ---
 
 <one or two short paragraphs of context: why this is on the list, what's
@@ -107,7 +107,27 @@ Windows (PowerShell):
 
 If the resulting string doesn't look like a real project (e.g. just the home directory), set `project: null`.
 
-### 5. Write the file
+### 5. Select tags from the controlled vocabulary
+
+Tags are a **controlled vocabulary**. The only tags you may put on a new task are those already catalogued in `<task-data>/tags-master-list.json`. Never invent a tag, and never carry a project name, a `personal`/`work` label, or any free-text descriptor onto a task just because it seems apt — if it is not in the master list, it does not go on.
+
+1. Read `<task-data>/tags-master-list.json`. Its shape is:
+
+   ```json
+   { "categories": { "<category>": [ { "name": "azure", "description": "…" }, … ] } }
+   ```
+
+   The allowed tag set is every `name` across every category.
+
+2. From what the user said, pick only the catalogued tags that clearly apply. Match case-insensitively, but write each tag using the **canonical casing from the file**. Be conservative: a tag must be an obvious fit, not a stretch. Most tasks get zero or one tag.
+
+3. If nothing in the vocabulary clearly applies, **omit the `tags` line entirely**. An absent `tags` is always correct; an off-list tag never is.
+
+4. If `tags-master-list.json` does not exist (older setups), omit `tags` — there is no vocabulary to draw from, and this skill must not create one.
+
+Growing the vocabulary is the dashboard's Tag Manager's job, never this skill's. If the user explicitly wants a brand-new tag, capture the task without it and tell them to add the tag via the dashboard's **Tags** manager first, then re-tag the task.
+
+### 6. Write the file
 
 Use the Write tool. Frontmatter first, then a blank line, then 1-2 short paragraphs of context. Do **not** include a Markdown heading — the dashboard renders the title from frontmatter, and a duplicate `#` heading creates visual noise.
 
@@ -117,7 +137,7 @@ Set `last-updated` to the same value as `created` (both are today's date on a ne
 
 Quote the title only if it contains a colon or other YAML-significant character. Otherwise leave it unquoted, matching the existing files.
 
-### 6. Report
+### 7. Report
 
 One short block, no per-step chatter:
 
@@ -166,5 +186,5 @@ Output:
 
 - One task per invocation. If the user rattles off three things, ask which they meant or do them as three writes — but don't merge unrelated commitments into one file.
 - Don't update existing tasks here. That's `task-dashboard:task-update`'s job. If the user says "T12 is done" while invoking this skill, redirect to `task-dashboard:task-complete` / `task-dashboard:task-update`.
-- Don't try to be clever about tags. Leave the `tags` line out unless a meaningful tag is obvious from context (e.g. project name as a tag, or "personal" / "work").
+- Tags are a controlled vocabulary (see step 5): only ever apply tags already in `tags-master-list.json`, matched case-insensitively against the canonical casing. Never invent tags, never use a project name or "personal"/"work" as a tag, and omit `tags` whenever nothing in the master list clearly fits. New vocabulary entries are added through the dashboard's Tag Manager, not here.
 - Never log or echo the body of other tasks. This skill writes one new file; it does not browse.
