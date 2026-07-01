@@ -44,7 +44,7 @@ Read the user's sentence carefully:
 - **State → open** (a genuine reopen): "reopen T12", "T12 is active again", "back to open on T12" — only when the user wants it back in the Active list, not merely parked.
 - **Type change:** "T9 is actually an action now", "promote T9 to an action", "reclassify T7 as an issue", "T12 turned out to be a bug, not an idea". The frequent case is `idea → action` when the user commits to acting on a parked idea, often alongside `state → in-progress` in the same breath.
 - **Branch set/change:** "T12 branch is t12-my-feature", "set branch on T15 to releases/foo", "T9 — branch is users/rc/thing". Extract the branch name verbatim.
-- **Person set/change:** "T9 — assign to Helen", "T12 is now on Ben", "T7 — person is Karl". Use the first name as given.
+- **Person set/change:** "T9 — assign to Helen", "T12 is now on Ben", "T7 — person is Karl". Use the first name as given. `person` names another interested party (deliberately vague) — don't read it as ownership; the task isn't necessarily "theirs".
 - **Tags set/change:** "T7 — tag it infra", "T12 add tags auth, api", "clear tags on T9".
 - **Append context only, no other change:** anything that adds a fact without announcing progress, a reclassification, or a field assignment. "T12 — Helen confirmed she'll come back Friday", "T19 — Ben's going to push back on the schema", "T7 needs the ADR signed off first".
 

@@ -61,7 +61,7 @@ If the cwd is outside any meaningful project (e.g. the user's home directory), u
 Read what the user just said. Distil it into:
 - A short, content-rich title. Skip filler ("need to", "should", "remember to"). Drop trailing punctuation.
 - A type (`action`, `idea`, or `issue`). Default to `action` if the verb is concrete and current; `idea` if the framing is "could be neat", "worth exploring later", "thought for the future"; `issue` if something is wrong and needs fixing.
-- A `person`, if and only if a specific human is named in the commitment ("chase Helen", "ask Ben about X"). Use the first name as written. Don't infer a person where none is mentioned.
+- A `person`, if and only if a specific human is named in the commitment ("chase Helen", "ask Ben about X"). Use the first name as written. Don't infer a person where none is mentioned. `person` names another interested party connected to the task — a counterparty or stakeholder. It's deliberately vague, so don't read it as ownership: the task isn't necessarily "theirs".
 
 If the title or type genuinely isn't obvious (rare), ask one short question. Otherwise proceed.
 
