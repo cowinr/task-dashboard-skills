@@ -34,6 +34,10 @@ created: YYYY-MM-DD                   # required; today's date
 last-updated: YYYY-MM-DD              # required; same as created at creation time
 project: <encoded id or null>         # optional; absolute path of cwd, / → - (POSIX) or \ → - (Windows)
 person: <name>                        # optional; only when there's a named human counterparty
+waiting-on: <name or thing>           # optional; who or what this task is already blocked on — rare at creation, usually added later via task-update
+waiting-since: YYYY-MM-DD             # optional; only set alongside waiting-on — defaults to today if waiting-on is given without a date
+blocking: <name>                      # optional; who is already waiting on the task owner for this — rare at creation, usually added later via task-update
+blocking-since: YYYY-MM-DD            # optional; only set alongside blocking — defaults to today if blocking is given without a date
 tags: [tag1, tag2]                    # optional; ONLY names from tags-master-list.json (see step 5); omit if none fit
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: task-list
-description: Use whenever the user wants a quick read of their current task list without opening the dashboard. Triggers on phrases like "what's on my list", "show open tasks", "tasks for Helen", "what do I owe Gav", "tasks for this project", "open follow-ups", "what's in progress", "what tasks tagged X", "/task-dashboard:task-list", or "list tasks". Reads frontmatter from the task-data tasks directory, applies any filter mentioned (person, project, state, type, tag), and prints a compact table. Read-only; never writes.
+description: Use whenever the user wants a quick read of their current task list without opening the dashboard. Triggers on phrases like "what's on my list", "show open tasks", "tasks for Helen", "what do I owe Gav", "tasks for this project", "open follow-ups", "what's in progress", "what tasks tagged X", "who am I waiting on", "what am I waiting on and for how long", "who's waiting on me", "what am I blocking", "what's outstanding from Ed", "/task-dashboard:task-list", or "list tasks". Reads frontmatter from the task-data tasks directory, applies any filter mentioned (person, project, state, type, tag, waiting-on, blocking), and prints a compact table, or a dedicated waiting-on/blocking view for "who am I waiting on" and "who is waiting on me" style questions. Read-only; never writes.
 ---
 
 # Task List
@@ -29,6 +29,8 @@ Pick out any of:
 - **State:** "open tasks" (state: open), "in progress" (state: in-progress), or "any state" if the user didn't constrain. Default: `open` and `in-progress` (i.e. anything not done/dropped).
 - **Type:** "actions" (type: action), "ideas" (type: idea), or both. Default: both.
 - **Tag:** "tagged X", "for the task-dashboard work" → match against `tags: [...]`.
+- **Waiting-on:** "who am I waiting on", "what's outstanding from Ed" → filter to tasks with a non-empty `waiting-on:` (optionally narrowed to a specific value, case-insensitive substring match). Triggers the dedicated waiting-on render (step 5).
+- **Blocking:** "who is waiting on me", "what am I blocking", "what does Jason need from me" → filter to tasks with a non-empty `blocking:` (optionally narrowed to a specific value). Triggers the dedicated blocking render (step 5).
 
 If the user's sentence is ambiguous, pick the most likely interpretation and state the filter at the top of the output. Don't ping-pong with clarifying questions for a read-only command.
 
@@ -43,6 +45,8 @@ For each `.md` file in `<task-data>/tasks/` (NOT recursing into `archive/`), pul
 - `project`
 - `person` (may be absent)
 - `tags` (may be absent)
+- `waiting-on`, `waiting-since` (may be absent; `waiting-since` is only meaningful alongside `waiting-on`)
+- `blocking`, `blocking-since` (may be absent; `blocking-since` is only meaningful alongside `blocking`)
 
 Skip files that fail to parse — log a one-line warning under the table.
 
@@ -80,6 +84,32 @@ T34  open         idea    Auto-archive tasks > 30 days old
 ```
 
 Cap output at ~25 rows. If more match the filter, print the first 25 and add `… and N more — open the dashboard for the full list.` at the bottom.
+
+### 5a. Waiting-on / blocking views
+
+Two dedicated renders, used instead of the default table when the question is specifically about waiting-on or blocking (step 1).
+
+**"Who am I waiting on"** — filter to tasks with a non-empty `waiting-on`. Sort by `waiting-since` ascending (oldest first — the longest-outstanding wait is the most overdue). Age is computed from `waiting-since` to today, in whole days — `waiting-since` is the reason this is honest: `last-updated` moves every time a note is appended, so it is never used for age here. A task with `waiting-on` set but no `waiting-since` (a hand-edited file, or data from before this field existed) shows age as `?` and sorts last. Example:
+
+```
+Waiting on (3)
+
+T12  47 days  Ed                            Chase Ed about the Q2 numbers
+T34  12 days  architecture forum sign-off   Finish the ADR
+T9    3 days  Gav                           Confirm the schema decision
+```
+
+**"Who is waiting on me"** — filter to tasks with a non-empty `blocking`. Sort by `blocking-since` ascending (oldest first — the longest-outstanding ask is the most overdue), exactly mirroring the waiting-on view above. Age is computed from `blocking-since` to today, in whole days, for the same reason: `last-updated` moves on every note append, so it is never used for age here. A task with `blocking` set but no `blocking-since` (a hand-edited file, or data from before this field existed) shows age as `?` and sorts last. "Jason has been waiting on you for 20 days" is the sentence that changes behaviour; "Jason is waiting on you" is a fact you skim past — the age column is the point. Example:
+
+```
+Blocking (3)
+
+T15  20 days  Jason  Finish the migration script
+T22   6 days  Karl   Send over the design doc
+T31      ?    Karl   Confirm the API contract
+```
+
+Both views respect the ~25-row cap and the same "… and N more" overflow line as the default render.
 
 ### 6. State the filter
 

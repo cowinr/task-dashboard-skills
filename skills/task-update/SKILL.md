@@ -1,6 +1,6 @@
 ---
 name: task-update
-description: Use whenever the user wants to change the state, type, or optional fields of an existing task, or append a one-line context note to it, by ID. Triggers on phrases like "update T12", "T19 is in progress", "T7 is blocked on …", "add a note to T15", "T22 — Ben pushed back", "T8 — moving forward", "T19 is actually an issue", "reclassify T7 as an action", "promote T9 to an action", "park T12", "T12 on hold", "T12 branch is foo", "set the branch on T15 to bar", "T9 — assign to Helen", "T7 — add tag infra", "/task-dashboard:task-update T<n>", or any sentence that names a `T<digits>` id and either announces progress, a block, a parking, a reclassification, a branch assignment, a person change, a tag change, or a new fact. Edits the frontmatter `state`, `type`, `branch`, `person`, and/or `tags`, and/or appends a single body line. Does NOT mark tasks done — that's `task-dashboard:task-complete`. Does NOT create new tasks — that's `task-dashboard:task-create`.
+description: Use whenever the user wants to change the state, type, or optional fields of an existing task, or append a one-line context note to it, by ID. Triggers on phrases like "update T12", "T19 is in progress", "T7 is blocked on …", "add a note to T15", "T22 — Ben pushed back", "T8 — moving forward", "T19 is actually an issue", "reclassify T7 as an action", "promote T9 to an action", "park T12", "T12 on hold", "T12 branch is foo", "set the branch on T15 to bar", "T9 — assign to Helen", "T7 — add tag infra", "T12 is waiting on Ed", "T9 waiting on architecture forum sign-off", "Ed's unblocked T12", "clear the wait on T7", "T15 is blocking Jason", "clear blocking on T9", "/task-dashboard:task-update T<n>", or any sentence that names a `T<digits>` id and either announces progress, a block, a parking, a reclassification, a branch assignment, a person change, a tag change, a waiting-on/blocking change, or a new fact. Edits the frontmatter `state`, `type`, `branch`, `person`, `tags`, `waiting-on`, `waiting-since`, `blocking`, and/or `blocking-since`, and/or appends a single body line. Does NOT mark tasks done — that's `task-dashboard:task-complete`. Does NOT create new tasks — that's `task-dashboard:task-create`.
 ---
 
 # Task Update
@@ -9,7 +9,7 @@ In-session edit of a known task. Four things this skill does, and only these:
 
 1. **Change `state`** in frontmatter — `open`, `in-progress`, or `on-hold` (parking a started task somewhere kept warm but out of the Active view). (For `done` or `dropped`, hand off to `task-dashboard:task-complete`, which also runs the archive sweep.)
 2. **Change `type`** in frontmatter — `action`, `idea`, or `issue`, and nothing outside that enum. The common case is promoting an `idea` to an `action` when the user decides to act on it; reframing to `issue` is equally valid.
-3. **Set or update optional frontmatter fields** — `branch`, `person`, and `tags`. Set them when first provided; update them when a new value is given; clear them by setting to `null` or `[]` (for tags) when the user explicitly removes one. These fields may not exist in older task files and should be added when first set.
+3. **Set or update optional frontmatter fields** — `branch`, `person`, `tags`, `waiting-on`, `waiting-since`, `blocking`, and `blocking-since`. Set them when first provided; update them when a new value is given; clear them by setting to `null` or `[]` (for tags) when the user explicitly removes one. These fields may not exist in older task files and should be added when first set. `waiting-on`/`waiting-since` and `blocking`/`blocking-since` are orthogonal to `state` — never infer or change `state` from them, and never derive them from `state`; a task can be `in-progress` and `waiting-on` someone at the same time, and that is the common case, not a contradiction. `waiting-on` is free text naming who **or what** is blocking the task (a person, "architecture forum sign-off", anything) — it is distinct from `person` (a neutral counterparty) and the two are never conflated or auto-populated from each other. `blocking` names who is waiting on the task owner and is set/cleared independently of `waiting-on`. Both pairs share the same dating rule, which mirrors what the dashboard's own API now enforces on every write (see step 3): a field set to a **new or changed** value with no explicit date stamps its `-since` to today; the **exact same value re-written is a no-op and must leave `-since` untouched** — a routine re-confirmation must never silently reset the clock; an explicit date always overrides the default; clearing a field always clears its `-since` too.
 4. **Append a single short line** to the body, capturing new context — a date, a name, a blocker, a small decision.
 
 Any one of these, or a combination. If a request would do more than this (rewriting the title, restructuring the body, moving the file), say so and offer to open the file in the editor instead.
@@ -46,6 +46,10 @@ Read the user's sentence carefully:
 - **Branch set/change:** "T12 branch is t12-my-feature", "set branch on T15 to releases/foo", "T9 — branch is users/rc/thing". Extract the branch name verbatim.
 - **Person set/change:** "T9 — assign to Helen", "T12 is now on Ben", "T7 — person is Karl". Use the first name as given. `person` names another interested party (deliberately vague) — don't read it as ownership; the task isn't necessarily "theirs".
 - **Tags set/change:** "T7 — tag it infra", "T12 add tags auth, api", "clear tags on T9".
+- **Waiting-on set/change:** "T12 is waiting on Ed", "T9 — waiting on architecture forum sign-off", "chase Ed on T12, put that on the record". Free text — capture who or what the task is blocked on, verbatim. Not the same as `person`: don't set `person` just because `waiting-on` was set, or vice versa. This bucket includes a plain re-confirmation of the same value ("T12 is still waiting on Ed") — the dating rules in step 3 decide whether that resets the clock, not this step.
+- **Waiting-on clear:** "Ed's unblocked T12", "T9 isn't waiting on anything now", "clear the wait on T7".
+- **Blocking set/change:** "T15 is blocking Jason", "Jason's waiting on T15 now", "T7 — Karl needs this from me". Free text — who is owed the task. Also includes a plain re-confirmation of the same value; see step 3.
+- **Blocking clear:** "T15 doesn't block Jason any more", "clear blocking on T9".
 - **Append context only, no other change:** anything that adds a fact without announcing progress, a reclassification, or a field assignment. "T12 — Helen confirmed she'll come back Friday", "T19 — Ben's going to push back on the schema", "T7 needs the ADR signed off first".
 
 If the intent is mixed (any combination of field changes + new context), do all of it in one pass.
@@ -59,6 +63,19 @@ Use the Edit tool. Apply all of the following that are relevant:
 - **`branch`:** set or replace the `branch:` line with the new value. If the field doesn't exist, insert it after `last-updated`. To clear, set `branch: null`.
 - **`person`:** set or replace the `person:` line. If the field doesn't exist, insert it after `last-updated` (or after `branch` if present). To clear, remove the line entirely.
 - **`tags`:** set or replace the `tags:` line, e.g. `tags: [infra, auth]`. If the field doesn't exist, insert it after `last-updated`. To clear, set `tags: []`.
+- **`waiting-on`:** before editing, read the CURRENT value already in the file (absent counts as no current value). Set or replace the `waiting-on:` line with the new value (free text — a person or a thing, e.g. `waiting-on: Ed` or `waiting-on: architecture forum sign-off`). If the field doesn't exist, insert it after `person` (or after `last-updated`/`project` if `person` is absent). Then, trimmed and compared exactly (case-sensitive) against the current value:
+  - **New or changed** (including "was absent, now set"): also set `waiting-since` to **today's real date** (`YYYY-MM-DD`, read the clock, never copied from an example) — insert it immediately after `waiting-on`, or replace the existing line.
+  - **The exact same value re-written — a no-op:** leave `waiting-since` completely untouched; do not touch that line at all. This is the single most important rule in this section — a routine re-confirmation ("still waiting on Ed") must never silently reset the clock.
+  - **Explicit date given** ("waiting on Ed since 9 June"): use that date instead of today's, whether the value is new, changed, or unchanged — an explicit date always wins over the default.
+  - To clear, remove both the `waiting-on:` and `waiting-since:` lines; clearing one always clears the other, even if the user only mentioned one.
+- **`waiting-since`:** only ever set alongside `waiting-on`, per the rules above. Format `YYYY-MM-DD`. Never set `waiting-since` on a task with no `waiting-on`.
+- **`blocking`:** identical rules to `waiting-on`, mirrored exactly. Before editing, read the CURRENT value already in the file. Set or replace the `blocking:` line with the new value (who is waiting on the task owner). If the field doesn't exist, insert it after `waiting-since` (or after `person`/`last-updated` if `waiting-on` is absent). Then, trimmed and compared exactly against the current value:
+  - **New or changed:** also set `blocking-since` to today's real date — insert it immediately after `blocking`, or replace the existing line.
+  - **The exact same value re-written — a no-op:** leave `blocking-since` completely untouched.
+  - **Explicit date given:** use that date instead of today's — always wins over the default.
+  - To clear, remove both the `blocking:` and `blocking-since:` lines; clearing one always clears the other.
+  - `blocking`/`blocking-since` is independent of `waiting-on`/`waiting-since` — setting, changing, or clearing one pair never touches the other.
+- **`blocking-since`:** only ever set alongside `blocking`, per the rules above. Format `YYYY-MM-DD`. Never set `blocking-since` on a task with no `blocking`.
 
 Always update `last-updated` to today's date in YYYY-MM-DD format. If `last-updated` is not yet in the frontmatter, add it immediately after `created`. Never touch `id`, `title`, `created`, or `project` — those are immutable.
 
@@ -85,7 +102,7 @@ Whether or not a context line is appended, always update `last-updated` in the f
      + "claude 2026-05-11 14:32 — Helen confirmed she'll come back by Friday."
 ```
 
-Include only the parts that changed on the `→` line: `type:` and/or `state:`, joined by ` · ` when both changed.
+Include only the parts that changed on the `→` line: `type:`, `state:`, `branch:`, `person:`, `tags:`, `waiting-on:`, and/or `blocking:`, joined by ` · ` when more than one changed. (`waiting-since` and `blocking-since` are never shown separately — each always travels with its parent field.) If `waiting-on` or `blocking` was "changed" only in the sense of being re-confirmed with the exact same value, nothing on disk actually changed — omit it from the `→` line entirely, same as any other no-op field.
 If no frontmatter changed (line appended only): omit the `→` line.
 If only a line was appended (no frontmatter change): omit the `→` line; if no line was appended, omit the `+ "…"` line.
 
@@ -139,10 +156,45 @@ User: *"T7 — moving to Karl, he's picking this up now"*
 
 - Find T7, set `person: Karl`. Append: "claude 2026-06-11 14:30 — Karl taking this over." Report line: `T7 → person: Karl`.
 
+**Example 9 — waiting-on set, then cleared**
+
+User: *"T12 is waiting on Ed"*
+
+- Find T12, set `waiting-on: Ed` and `waiting-since:` to **today's real date** in `YYYY-MM-DD` (no date was given, so the wait starts now). Read the clock; never copy a date from an example. No state change — `state` stays whatever it already was. Report line: `T12 → waiting-on: Ed`.
+
+Later, user: *"Ed's sorted T12"*
+
+- Find T12, remove both `waiting-on:` and `waiting-since:`. Report line: `T12 → waiting-on: (cleared)`.
+
+**Example 10 — blocking set**
+
+User: *"T15 is blocking Jason — he's waiting on my part"*
+
+- Find T15, set `blocking: Jason` and `blocking-since` to today's real date (no date was given). No change to `waiting-on` — the two are independent. Report line: `T15 → blocking: Jason`.
+
+**Example 11 — waiting-on re-confirmed with the same value (the trap)**
+
+T12 already has `waiting-on: Ed` and `waiting-since: 2026-05-11`. User: *"T12 is still waiting on Ed"*
+
+- Find T12. The new value ("Ed") is identical, trimmed, to what's already on disk — a no-op. Leave `waiting-since` exactly as it was, `2026-05-11`; do **not** stamp today. No state change. Since nothing on disk actually changed, omit `waiting-on:` from the `→` line entirely — append a context line only if the user volunteered new information beyond the re-confirmation itself.
+
+**Example 12 — blocking re-confirmed, then genuinely changed**
+
+T15 already has `blocking: Jason` and `blocking-since: 2026-06-01`. User: *"Jason's still waiting on T15"*
+
+- Find T15. Same value — a no-op. Leave `blocking-since` untouched at `2026-06-01`. Omit the `→` line.
+
+Later, user: *"actually it's Karl chasing T15 now, not Jason"*
+
+- Find T15. `blocking` changes from `Jason` to `Karl` — a genuine change, no date given, so `blocking-since` re-stamps to today's real date. Report line: `T15 → blocking: Karl`.
+
 ## Boundaries
 
 - **Never edit `id`, `title`, `created`, or `project`.** Those changes warrant opening the file in the editor; surface that and stop.
-- **Mutable frontmatter fields this skill may edit:** `state`, `type`, `branch`, `person`, `tags`, and `last-updated`. Nothing else.
+- **Mutable frontmatter fields this skill may edit:** `state`, `type`, `branch`, `person`, `tags`, `waiting-on`, `waiting-since`, `blocking`, `blocking-since`, and `last-updated`. Nothing else.
+- **`waiting-on`/`waiting-since`/`blocking`/`blocking-since` never drive `state`, and `state` never drives them.** Do not set `state: on-hold` because `waiting-on` was set, and do not infer `waiting-on` or `blocking` from a state change. They are orthogonal facts tracked side by side.
+- **`waiting-on` is not `person`.** Never copy one field's value into the other or assume they should match.
+- **A same-value re-write of `waiting-on` or `blocking` must never reset its `-since`.** Always compare against the value currently on disk before deciding whether to stamp a new date — see step 3. Resetting the clock on a routine re-confirmation is the one mistake that makes the whole age-tracking feature worthless.
 - **A `type` change must land inside the `action | idea | issue` enum.** Anything else is rejected; stop and report rather than write a junk value.
 - **A `state` change must land inside the `open | in-progress | on-hold` enum.** `done`/`dropped` hand off to `task-dashboard:task-complete`.
 - **Always refresh `last-updated` to today's date** on every invocation, even if only a body line was appended.

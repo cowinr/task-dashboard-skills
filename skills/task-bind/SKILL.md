@@ -47,6 +47,7 @@ Read the full file — frontmatter and body. Extract:
 
 - `id`, `title`, `type`, `state`
 - `person`, `project`, `tags` (any that are present)
+- `waiting-on`, `waiting-since`, `blocking`, `blocking-since` (any that are present — plain optional fields, same as `person`)
 - `related` — a YAML list in frontmatter (e.g. `related:\n  - T113`); extract all entries. This is the authoritative source.
 - `branch`, `pr`, `jira` — frontmatter fields. `branch` is a plain string; `pr` and `jira` are URLs (surface the URL or its human-readable key). These are the authoritative source.
 - The next concrete step, if stated explicitly in the body; otherwise summarise from context.
@@ -70,6 +71,8 @@ Use `-r` (reuse window) so a rebind does not spawn a fresh window each time. Thi
    type:    <type>
    state:   <state>
    person:  <person>          ← omit line if absent
+   waiting-on: <value>        ← omit line if absent
+   blocking:   <value>        ← omit line if absent
    project: <project>         ← omit line if absent
    tags:    [<tags>]          ← omit line if absent / empty
    related: T<x>, T<y>       ← omit line if none found

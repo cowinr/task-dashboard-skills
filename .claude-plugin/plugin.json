@@ -1,6 +1,6 @@
 {
   "name": "task-dashboard",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Six Claude Code skills for capturing, updating, listing, and closing personal tasks stored as markdown files in a task-data repository. Works on macOS and Windows 11.",
   "author": {
     "name": "Richard Cowin"
