@@ -33,11 +33,15 @@ state: open                           # required (default: open)
 created: YYYY-MM-DD                   # required; today's date
 last-updated: YYYY-MM-DD              # required; same as created at creation time
 project: <encoded id or null>         # optional; absolute path of cwd, / → - (POSIX) or \ → - (Windows)
+parent: T<n>                          # optional; ID of the parent task, if this one sits under another
 person: <name>                        # optional; only when there's a named human counterparty
 waiting-on: <name or thing>           # optional; who or what this task is already blocked on — rare at creation, usually added later via task-update
 waiting-since: YYYY-MM-DD             # optional; only set alongside waiting-on — defaults to today if waiting-on is given without a date
 blocking: <name>                      # optional; who is already waiting on the task owner for this — rare at creation, usually added later via task-update
 blocking-since: YYYY-MM-DD            # optional; only set alongside blocking — defaults to today if blocking is given without a date
+committed: YYYY-MM-DD                 # optional; a plain date the user names explicitly — no -since companion, no auto-stamping
+committed-to: <free text>             # optional; only meaningful alongside committed — what/whom the date is owed to
+core: true                            # optional; present only when true — never write core: false; omit the line otherwise
 tags: [tag1, tag2]                    # optional; ONLY names from tags-master-list.json (see step 5); omit if none fit
 ---
 
@@ -57,6 +61,12 @@ Note: there is no `follow-up` type. A task waiting on someone is still an `actio
 - Windows: `C:\Users\alice\projects\myapp` → `C-Users-alice-projects-myapp`
 
 If the cwd is outside any meaningful project (e.g. the user's home directory), use `null`.
+
+**Parent:** optional; set only when the user names an existing task this one sits under ("add a task under T193", "this is a sub-task of T50"). Validate the value matches `T<digits>` (case-insensitive) before writing it; if it doesn't, reject it and tell the user rather than writing a malformed value. There's no self-parent or cycle check here — the new task has no id yet to collide with, so those checks only apply later, via `task-dashboard:task-update`.
+
+**Committed / committed-to:** both optional; set only when the user explicitly names a commitment date at capture time ("add this and commit to 25 July", "capture this, committed to Friday's board pack — committed-to is the board"). Validate `committed` against `^\d{4}-\d{2}-\d{2}$` before writing; if it doesn't match, reject it and tell the user rather than write a malformed value. `committed-to` is free text and meaningful only alongside `committed` — never write `committed-to` without also writing `committed` in the same file. Neither field takes a `-since` companion; `committed` is a plain date the user names, not a clock reading.
+
+**Core:** optional; write `core: true` only when the user explicitly flags the task as core — an externally-owed or board-level commitment, not the default for ordinary tasks. Omit the field entirely otherwise; never write `core: false`. There's no `focus` field at creation time — `focus` is a daily-transient flag set by the morning digest/dashboard, not a creation property, so this skill never writes it.
 
 ## Workflow
 
@@ -185,6 +195,28 @@ Output:
 - type: action
 - project: null
 - title: Book MOT for the car
+
+**Example 4 — sub-task with parent**
+
+User: *"add a task under T193: write the migration script"*
+
+Output:
+- type: action
+- title: Write the migration script
+- parent: T193
+- body: One line of context naming what the migration covers.
+
+**Example 5 — committed and core**
+
+User: *"add a task: I've committed to the board that the audit remediation plan will be ready by 25 July — this one's core"*
+
+Output:
+- type: action
+- title: Deliver audit remediation plan
+- committed: 2026-07-25
+- committed-to: the board
+- core: true
+- body: One line of context on what "ready" means and who's tracking it.
 
 ## Boundaries
 
