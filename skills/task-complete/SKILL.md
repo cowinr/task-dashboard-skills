@@ -56,7 +56,7 @@ Set `state: <done|dropped>` and update `last-updated` to today's date in YYYY-MM
 
 Before flipping the state, write a note that captures **what was actually done, or what changed** — not a bare "Done in session." The archived task is the only durable record of the work; the note must let a future reader understand the outcome without reconstructing the session.
 
-Use the canonical note format: `claude YYYY-MM-DD HH:mm — text`, where `YYYY-MM-DD` is today's date and `HH:mm` is the current 24-hour wall-clock time at the moment of writing. Keep it tight — one line when the work genuinely was trivial, two or three short lines (or a brief `- ` list) when there's substance worth recording. Name the concrete artefacts: files or modules touched, the PR or commit, the decision taken, who confirmed it.
+Use the canonical note format: `claude YYYY-MM-DD HH:mm — text`, where `YYYY-MM-DD` is today's date and `HH:mm` is the current 24-hour wall-clock time at the moment of writing. Lead with `argus` instead of `claude` if you are operating as the Argus chief-of-staff system (see `task-update`'s author-prefix note); never write `user` from a skill. Keep it tight — one line when the work genuinely was trivial, two or three short lines (or a brief `- ` list) when there's substance worth recording. Name the concrete artefacts: files or modules touched, the PR or commit, the decision taken, who confirmed it.
 
 - For `done`: describe the outcome and the change. Examples:
   - `claude 2026-05-11 14:32 — Done; added retry/backoff to the sync client (src/sync/client.ts), PR #142 merged.`
