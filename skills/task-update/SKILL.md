@@ -89,17 +89,15 @@ Always update `last-updated` to today's date in YYYY-MM-DD format. If `last-upda
 
 ### 4. Append context line (if there's new info)
 
-One line, plain prose, ≤ 140 chars. Use the canonical note format, leading with `claude`, today's date in `YYYY-MM-DD`, and the current time in `HH:mm` (24-hour), e.g.:
+One line, plain prose, ≤ 140 chars. **Append it with the `task-note` CLI**, which stamps the author, reads the wall-clock time, refreshes `last-updated`, formats the line so the dashboard renders it, stacks it with the right blank-line separation, and refuses to write to an archived task:
 
+```bash
+task-note T19 "Helen confirmed she'll come back by Friday on the Q2 numbers."
 ```
-claude 2026-05-11 14:32 — Helen confirmed she'll come back by Friday on the Q2 numbers.
-```
 
-The dashboard renders `claude YYYY-MM-DD HH:mm — text` with an attributed sparkles glyph and a formatted date. Use the real wall-clock time at the moment of writing; do not guess or round.
+Pass the task id and the note text only — nothing else. `task-note` decides the author itself: `argus` in an Argus session (set by the `argus` repo's environment), `claude` in a general session. So you never write the author or the timestamp by hand, and Argus-authored notes stay distinguishable from a conversation Richard was actually in — the dashboard gives `argus` an eye glyph, `claude` a sparkles glyph. Don't add a heading like `## Updates`; one note per inflection; keep it tight.
 
-**Author prefix.** Lead with `claude` for a general Claude Code session — that is the default. Lead with `argus` **only** when you are operating as the Argus chief-of-staff system (the `argus` repo's `CLAUDE.md` establishes this: "if you are an agent working in this repo, you are Argus"), so notes written from digest or intake proposals are distinguishable from a conversation Richard was actually in; the dashboard renders those with an eye glyph instead. Never write `user` from a skill — that prefix is reserved for notes typed directly into the dashboard UI.
-
-Append it to the end of the body, always preceded by exactly one blank line. The appended note line must never sit directly under the previous line (whether that line is body prose or an earlier `claude …` note) — there is always a blank line between them. Concretely: if the body already ends in a blank line, append the note; if it ends in a non-blank line, insert a blank line first, then the note. Notes therefore stack as blank-line-separated paragraphs, never as a tight block. Don't add a heading like `## Updates`. Don't reformat existing content. The dashboard renders the body as-is; tiny appended lines build up naturally over time.
+**Fallback — only if `task-note` is not on PATH** (e.g. a machine without it): hand-edit instead. Append `claude YYYY-MM-DD HH:mm — text` to the end of the body, preceded by exactly one blank line so notes stack as blank-line-separated paragraphs (never a tight block), and refresh `last-updated` to today. Use the real wall-clock time; do not guess or round. Lead with `argus` instead of `claude` only when you are operating as the Argus system; never write `user` from a skill (that prefix is the dashboard UI's). Don't reformat existing content.
 
 For a genuine blocker or warning that deserves visual emphasis, the one fact may instead be appended as a `> [!warning]` callout (two physical lines: `> [!warning]` then `> <text>`), which the dashboard renders as a tinted block. Use sparingly — one callout per genuinely important inflection, never for routine notes.
 
