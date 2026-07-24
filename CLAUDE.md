@@ -21,3 +21,5 @@ Use semver: patch for fixes and skill-text tweaks, minor for new skills or new c
 ## Skills
 
 Each skill lives in `skills/<name>/SKILL.md`. Edit the source here, never the installed cache copy under `~/.claude/plugins/cache/` (that is overwritten on update). After pushing a bump, run `/plugin` → update (or reinstall) to pick the change up locally.
+
+**A source edit changes nothing that is already running.** Skills load into a session when it starts, so new text reaches a session only after the cache updates *and* that session restarts — already-open sessions keep following the old instructions. So never report that behaviour has changed on the strength of an edited, or even a pushed, `SKILL.md`: state what still has to happen first. 23 July 2026: v1.3.0's new note-author rule reached the cache at 14:02 and a live session wrote a note the old way at 14:05.
